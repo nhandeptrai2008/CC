@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Love 3D Floating Words</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: radial-gradient(circle at center, #ffafcc 0%, #a2d2ff 100%);
+      perspective: 1000px;
+    }
+
+    .popup {
+      position: absolute;
+      padding: 12px 24px;
+      background: rgba(255, 255, 255, 0.4);
+      backdrop-filter: blur(6px);
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      font-weight: bold;
+      font-size: clamp(14px, 4vw, 20px); /* Responsive: phù hợp mọi thiết bị */
+      color: #d63384;
+      border-radius: 14px;
+      border: 2px solid rgba(255, 255, 255, 0.7);
+      box-shadow: 0 6px 24px rgba(255, 105, 180, 0.5);
+      animation: float 30s linear infinite, fadeInOut 6s ease forwards;
+      transform-style: preserve-3d;
+      white-space: nowrap;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translate3d(0, 0, 0) rotate(0deg);
+      }
+      100% {
+        transform: translate3d(
+          calc(var(--x) * 1vw),
+          calc(var(--y) * 1vh),
+          calc(var(--z) * 1px)
+        ) rotate(360deg);
+      }
+    }
+
+    @keyframes fadeInOut {
+      0% {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+      10% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      90% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(1.2);
+      }
+    }
+
+    .dialog {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #F8C7DA;
+      padding: 20px;
+      border-radius: 10px;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      font-size: 24px;
+      color: white;
+      text-align: center;
+      box-shadow: 0 0 15px pink;
+      z-index: 1000;
+      max-width: 80%;
+    }
+  </style>
+</head>
+<body>
+  <div id="startDialog" class="dialog">✨ Click vào đây để bắt đầu điều kỳ diệu ✨</div>
+
+  <audio id="backgroundMusic" src="assets/music.mp3" loop></audio>
+
+  <script>
+    const messages = [
+      "Sinh Nhật Vui Vẻ ❤️",
+      "Tiên xinh gái !",
+      "I Love You 💖",
+      "Yêu Tiên",
+      "Càng Ngày Càng Xinh"
+    ];
+    let msgIndex = 0;
+
+    const colors = ["#ff69b4", "#d63384", "#ff4da6", "#fff"];
+    const dialog = document.getElementById("startDialog");
+    const audio = document.getElementById("backgroundMusic");
+
+    function createPopup() {
+      const popup = document.createElement("div");
+      popup.className = "popup";
+      popup.textContent = messages[msgIndex];
+      msgIndex = (msgIndex + 1) % messages.length;
+      popup.style.color = colors[Math.floor(Math.random() * colors.length)];
+
+      const x = Math.random() * 200 - 100;
+      const y = Math.random() * 200 - 100;
+      const z = Math.random() * 1000 - 500;
+
+      popup.style.setProperty("--x", x);
+      popup.style.setProperty("--y", y);
+      popup.style.setProperty("--z", z);
+
+      popup.style.left = `${Math.random() * window.innerWidth}px`;
+      popup.style.top = `${Math.random() * window.innerHeight}px`;
+
+      document.body.appendChild(popup);
+
+      // Xóa popup sau 6 giây
+      setTimeout(() => popup.remove(), 6000);
+    }
+
+    function startPopups(count) {
+      let created = 0;
+      const interval = setInterval(() => {
+        if (created >= count) {
+          clearInterval(interval);
+          return;
+        }
+        createPopup();
+        created++;
+      }, 200);
+    }
+
+    function enterFullscreen() {
+      const elem = document.documentElement;
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+      } else if (elem.webkitRequestFullscreen) {
+        elem.webkitRequestFullscreen();
+      } else if (elem.msRequestFullscreen) {
+        elem.msRequestFullscreen();
+      }
+    }
+
+    document.addEventListener("click", function startExperience() {
+      dialog.style.display = "none";
+      audio.play().catch(error => console.log("Lỗi phát nhạc:", error));
+      enterFullscreen();
+      startPopups(150);
+      document.removeEventListener("click", startExperience);
+    });
+  </script>
+</body>
+</html>
+
